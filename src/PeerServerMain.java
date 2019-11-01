@@ -6,7 +6,7 @@ import java.util.List;
 
 public class PeerServerMain extends Thread {
 
-    private final String QUERY_PORT = "query_port";
+    private final String SERVER_PORT = "server_port";
 
     private ServerSocket serverSocket;
 
@@ -22,7 +22,7 @@ public class PeerServerMain extends Thread {
     public void run() {
         System.out.println("Peer server is running.");
         try {
-            serverSocket = new ServerSocket(Integer.parseInt(config.getPeerConfig().get(QUERY_PORT)));
+            serverSocket = new ServerSocket(Integer.parseInt(config.getPeerConfig().get(SERVER_PORT)));
             while (keepListening) {
                 Socket connection = serverSocket.accept();
                 sockets.add(connection);

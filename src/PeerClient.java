@@ -15,14 +15,8 @@ public class PeerClient {
 
     public void connectToNeighbors() {
         sockets = socketInfoList.stream().map(info -> {
-            try {
-                System.out.println("Connecting to " + info.getIP());
-                int localPort = Integer.parseInt(config.getPeerConfig().get("query_port"));
-                return new Socket(info.getIP(), info.getPORT(), InetAddress.getByName(IPChecker.ip()),localPort);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
+            System.out.println("Connecting to " + info.getIP());
+            return PeerClient.createClientSocket(info.getIP(), info.getPORT());
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
@@ -100,7 +94,18 @@ public class PeerClient {
     }
 
     public static Socket createClientSocket(String remoteIp, int remotePort) {
-        return null;
+        Config config = new Config();
+        Socket socket = null;
+        for (int i = Integer.parseInt(config.getPeerConfig().get("client_port_min")); i <= Integer.parseInt(config.getPeerConfig().get("client_port_max")); i++) {
+            try {
+                InetAddress localAddr = InetAddress.getByName(IPChecker.ip());
+                socket = new Socket(remoteIp, remotePort, localAddr, i);
+                break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return socket;
     }
 
 }
