@@ -81,5 +81,6 @@ public class PeerServerChild extends Thread {
     private void handleE(Query query) throws IOException, QueryFormatException {
         DataOutputStream out = new DataOutputStream(client.getOutputStream());
         String response = new Query(QueryType.E, Collections.singletonList("Alive")).toString();
+        out.writeBytes(response + "\n");
     }
 }
