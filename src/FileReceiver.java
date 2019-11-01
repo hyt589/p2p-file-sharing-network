@@ -29,6 +29,7 @@ public class FileReceiver extends Thread {
             Path path = Paths.get(DIR + filename);
             Files.write(path, bytes, StandardOpenOption.CREATE_NEW);
             System.out.println("Download successful");
+            socket.close();
         } catch (QueryFormatException | IOException e) {
             e.printStackTrace();
         }
