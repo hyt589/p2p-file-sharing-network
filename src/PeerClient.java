@@ -17,7 +17,7 @@ public class PeerClient {
         sockets = socketInfoList.stream().map(info -> {
             try {
                 System.out.println("Connecting to " + info.getIP());
-                int localPort = Integer.parseInt(config.getPeerConfig().get("file_port"));
+                int localPort = Integer.parseInt(config.getPeerConfig().get("query_port"));
                 return new Socket(info.getIP(), info.getPORT(), InetAddress.getByName(IPChecker.ip()),localPort);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -97,6 +97,10 @@ public class PeerClient {
         } catch (QueryFormatException e) {
             e.printStackTrace();
         }
+    }
+
+    public static Socket createClientSocket(String remoteIp, int remotePort) {
+        return null;
     }
 
 }
