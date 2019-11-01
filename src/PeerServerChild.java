@@ -46,7 +46,7 @@ public class PeerServerChild extends Thread {
                 .collect(Collectors.toList());
         if (config.getSharing().contains(filename)) { //this peer has the file, return hit
             Query response = new Query(QueryType.R, Arrays.asList(IPChecker.ip() + ":"
-                    + config.getPeerConfig().get("file_port"), filename));
+                    + config.getPeerConfig().get("file_sender_port"), filename));
             out.writeBytes(response.toString() + "\n");
         }else { //forward the query to other neighbors
             Query hit = null;
