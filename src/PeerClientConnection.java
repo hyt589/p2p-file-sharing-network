@@ -22,14 +22,16 @@ public class PeerClientConnection extends Thread{
         try {
             socket.setSoTimeout(TIME_OUT);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+            System.out.println("Sending \"" + msg + "\"to " + socket.getRemoteSocketAddress().toString());
             out.writeBytes(msg + "\n");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String response = in.readLine();
+            System.out.println(socket.getRemoteSocketAddress().toString() + " replied: " + response);
             Query r = new Query(response);
             if (r.type == QueryType.R) {
                 hit = r;
             }else if (r.type == QueryType.E) {
-
+                echo = r;
             }
         } catch (SocketTimeoutException sto) {
             System.err.println("Query timed out.");

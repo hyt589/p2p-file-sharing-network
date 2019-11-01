@@ -38,13 +38,13 @@ public class PeerServerChild extends Thread {
         String filename = query.msgList.get(0);
         String clientAddress = client.getRemoteSocketAddress().toString();
         List<SocketInfo> neighbors = config.getNeighbors().stream()
-                .filter(socketInfo -> !socketInfo.getIP().equals(clientAddress))
+                .filter(socketInfo -> !socketInfo.getIP().equals(clientAddress)) //filter out the sender
                 .collect(Collectors.toList());
-        if (config.getSharing().contains(filename)) {
+        if (config.getSharing().contains(filename)) { //this peer has the file, return hit
             Query response = new Query(QueryType.R, Arrays.asList(IPChecker.ip() + ":"
                     + config.getPeerConfig().get("file_port"), filename));
             out.writeBytes(response.toString() + "\n");
-        }else {
+        }else { //forward the query to other neighbors
             Query hit = null;
             List<PeerClientConnection> clients = neighbors.stream()
                     .map(info -> {

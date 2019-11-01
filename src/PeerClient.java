@@ -1,9 +1,6 @@
 import java.io.IOException;
 import java.net.Socket;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class PeerClient {
@@ -17,6 +14,7 @@ public class PeerClient {
     private void connectToNeighbors() {
         sockets = socketInfoList.stream().map(info -> {
             try {
+                System.out.println("Connecting to " + info.getIP());
                 return new Socket(info.getIP(), info.getPORT());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -56,6 +54,7 @@ public class PeerClient {
                     break;
                 }
             }
+            //TODO: start file receiver here
         } catch (QueryFormatException e) {
             e.printStackTrace();
         }
@@ -64,16 +63,26 @@ public class PeerClient {
     private void checkConnectionStatus() {
         try {
             String query = new Query(QueryType.E, Collections.singletonList("Check connection")).toString();
-            List<PeerClientConnection> connectionThreads = sockets.stream().map(socket ->
-                    new PeerClientConnection(socket, query)).collect(Collectors.toList());
-            connectionThreads.forEach(PeerClientConnection::start);
-            connectionThreads.forEach(thread ->{
+            Map<Socket, PeerClientConnection> sockThreadMap = sockets.stream()
+                    .collect(Collectors.toMap(socket -> socket,
+                            socket -> new PeerClientConnection((Socket) socket, query)));
+            sockThreadMap.values().forEach(PeerClientConnection::start);
+            sockThreadMap.values().forEach(thread -> {
                 try {
                     thread.join();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             });
+            List<Socket> liveSockets = sockThreadMap.entrySet().stream()
+                    .filter(entry -> Objects.nonNull(entry.getValue().getEcho()))
+                    .map(Map.Entry::getKey).collect(Collectors.toList());
+            List<Socket> deadSockets = sockThreadMap.entrySet().stream()
+                    .filter(entry -> Objects.isNull(entry.getValue().getEcho()))
+                    .map(Map.Entry::getKey).collect(Collectors.toList());
+            liveSockets.forEach(socket -> System.out.println(socket.getRemoteSocketAddress().toString() + " is connected"));
+            deadSockets.forEach(socket ->
+                    System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check"));
         } catch (QueryFormatException e) {
             e.printStackTrace();
         }

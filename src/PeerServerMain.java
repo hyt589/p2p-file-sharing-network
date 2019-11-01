@@ -23,6 +23,7 @@ public class PeerServerMain extends Thread {
             serverSocket = new ServerSocket(Integer.parseInt(config.getPeerConfig().get(QUERY_PORT)));
             while (keepListening) {
                 Socket connection = serverSocket.accept();
+                System.out.println("Incoming connection from: " + connection.getRemoteSocketAddress().toString());
                 PeerServerChild child = new PeerServerChild(connection);
                 subThreads.add(child);
                 child.start();
