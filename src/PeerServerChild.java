@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,6 +6,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+/**
+ * Each PeerServerChild thread handles one connection.
+ * It repeatedly listens for messages and responds to messages accordingly.
+ */
 public class PeerServerChild extends Thread {
 
     private Socket client;
@@ -37,6 +40,12 @@ public class PeerServerChild extends Thread {
         }
     }
 
+    /**
+     * Handle the in coming Q query. Reply an R query to the sender if this is a hit; or forward to other peers otherwise
+     * @param query - incoming query
+     * @throws QueryFormatException
+     * @throws IOException
+     */
     private void handleQ(Query query) throws QueryFormatException, IOException {
         DataOutputStream out = new DataOutputStream(client.getOutputStream());
         String filename = query.msgList.get(0);
@@ -45,17 +54,19 @@ public class PeerServerChild extends Thread {
                 .filter(socketInfo -> !socketInfo.getIP().equals(clientAddress)) //filter out the sender
                 .collect(Collectors.toList());
         if (config.getSharing().contains(filename)) { //this peer has the file, return hit
+            System.out.println("Query hit. This peer has the file: " + filename);
             Query response = new Query(QueryType.R, Arrays.asList(IPChecker.ip() + ":"
                     + config.getPeerConfig().get("file_sender_port"), filename));
             out.writeBytes(response.toString() + "\n");
         }else { //forward the query to other neighbors
+            System.out.println("No hit. Forwarding the query to neighbors");
             Query hit = null;
-            List<PeerClientConnection> clients = neighbors.stream()
+            List<PeerClientThread> clients = neighbors.stream()
                     .map(info -> {
-                        return new PeerClientConnection(PeerClient.createClientSocket(info.getIP(), info.getPORT()), query.toString());
-                    }).filter(Objects::nonNull)
+                        return new PeerClientThread(PeerClient.createClientSocket(info.getIP(), info.getPORT()), query.toString());
+                    })
                     .collect(Collectors.toList());
-            clients.forEach(PeerClientConnection::start);
+            clients.forEach(PeerClientThread::start);
             clients.forEach(client -> {
                 try {
                     client.join();
@@ -64,7 +75,7 @@ public class PeerServerChild extends Thread {
                     e.printStackTrace();
                 }
             });
-            for (PeerClientConnection client :
+            for (PeerClientThread client :
                     clients) {
                 if (!client.isTimedOut() && Objects.nonNull(client.getHit())) {
                     hit = client.getHit();
@@ -75,9 +86,16 @@ public class PeerServerChild extends Thread {
         }
     }
 
+    /**
+     * Reply to a heart beat check
+     * @param query
+     * @throws IOException
+     * @throws QueryFormatException
+     */
     private void handleE(Query query) throws IOException, QueryFormatException {
         DataOutputStream out = new DataOutputStream(client.getOutputStream());
         String response = new Query(QueryType.E, Collections.singletonList("Alive")).toString();
+        System.out.println("Replying to heart beat check: " + response);
         out.writeBytes(response + "\n");
     }
 }

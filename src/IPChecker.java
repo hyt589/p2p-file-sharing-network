@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+/**
+ * Using the AWS ip checking service to obtain the ip address of this local machine
+ */
 public class IPChecker {
     public static String ip() {
         try {

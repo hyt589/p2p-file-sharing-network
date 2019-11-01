@@ -1,7 +1,6 @@
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,13 +12,21 @@ public class PeerClient {
 
     private List<Socket> sockets;
 
+    /**
+     * Connect to all neighbors by creating sockets using the information in socket infos
+     */
     public void connectToNeighbors() {
         sockets = socketInfoList.stream().map(info -> {
             System.out.println("Connecting to " + info.getIP());
-            return PeerClient.createClientSocket(info.getIP(), info.getPORT());
+            Socket connectionSocket = PeerClient.createClientSocket(info.getIP(), info.getPORT());
+            System.out.println("Success");
+            return connectionSocket;
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
+    /**
+     * Close connections to all neighbors
+     */
     public void closeConnections() {
         sockets.forEach(socket -> {
             try {
@@ -30,12 +37,16 @@ public class PeerClient {
         });
     }
 
+    /**
+     * Initiate a file request across the network
+     * @param filename
+     */
     public void getFile(String filename) {
         try {
             String query = new Query(QueryType.Q, Collections.singletonList(filename)).toString();
-            List<PeerClientConnection> connectionThreads = sockets.stream().map(socket ->
-                    new PeerClientConnection(socket, query)).collect(Collectors.toList());
-            connectionThreads.forEach(PeerClientConnection::start);
+            List<PeerClientThread> connectionThreads = sockets.stream().map(socket ->
+                    new PeerClientThread(socket, query)).collect(Collectors.toList());
+            connectionThreads.forEach(PeerClientThread::start);
             connectionThreads.forEach(thread ->{
                 try {
                     thread.join();
@@ -44,14 +55,13 @@ public class PeerClient {
                 }
             });
             Query hit = null;
-            for (PeerClientConnection thread :
+            for (PeerClientThread thread :
                     connectionThreads) {
                 if (!thread.isTimedOut() && Objects.nonNull(thread.getHit())) {
                     hit = thread.getHit();
                     break;
                 }
             }
-            //TODO: start file receiver here
             if (Objects.nonNull(hit)) {
                 String ip = hit.msgList.get(0).split(":")[0];
                 int port = Integer.parseInt(hit.msgList.get(0).split(":")[1]);
@@ -65,13 +75,16 @@ public class PeerClient {
         }
     }
 
+    /**
+     * Perform a heart beat check
+     */
     public void checkConnectionStatus() {
         try {
             String query = new Query(QueryType.E, Collections.singletonList("Check connection")).toString();
-            Map<Socket, PeerClientConnection> sockThreadMap = sockets.stream()
+            Map<Socket, PeerClientThread> sockThreadMap = sockets.stream()
                     .collect(Collectors.toMap(socket -> socket,
-                            socket -> new PeerClientConnection((Socket) socket, query)));
-            sockThreadMap.values().forEach(PeerClientConnection::start);
+                            socket -> new PeerClientThread((Socket) socket, query)));
+            sockThreadMap.values().forEach(PeerClientThread::start);
             sockThreadMap.values().forEach(thread -> {
                 try {
                     thread.join();
@@ -86,13 +99,25 @@ public class PeerClient {
                     .filter(entry -> Objects.isNull(entry.getValue().getEcho()))
                     .map(Map.Entry::getKey).collect(Collectors.toList());
             liveSockets.forEach(socket -> System.out.println(socket.getRemoteSocketAddress().toString() + " is connected"));
-            deadSockets.forEach(socket ->
-                    System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check"));
+            deadSockets.forEach(socket -> {
+                System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check");
+                try {
+                    socket.close(); //close dead sockets
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (QueryFormatException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * A wrapper method to create new sockets with only the assigned port numbers
+     * @param remoteIp - the remote ip address to connect to
+     * @param remotePort - remote peer's port
+     * @return a socket inside the assigned port range that connects to the remote peer or null if socket creation failed
+     */
     public static Socket createClientSocket(String remoteIp, int remotePort) {
         Config config = new Config();
         Socket socket = null;
@@ -104,6 +129,9 @@ public class PeerClient {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        if (Objects.isNull(socket)) {
+            System.out.println("Connection failed.");
         }
         return socket;
     }

@@ -2,7 +2,11 @@ import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
-public class PeerClientConnection extends Thread{
+/**
+ * This thread sends a message through the socket and waits for a response;
+ * will timeout after period of time if no response are received
+ */
+public class PeerClientThread extends Thread{
 
     private final int TIME_OUT = 30*1000;
 
@@ -12,7 +16,7 @@ public class PeerClientConnection extends Thread{
     private Query hit = null;
     private Query echo = null;
 
-    public PeerClientConnection(Socket socket, String msg) {
+    public PeerClientThread(Socket socket, String msg) {
         this.socket = socket;
         this.msg = msg;
     }

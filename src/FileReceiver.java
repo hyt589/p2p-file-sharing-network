@@ -6,6 +6,10 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 
+/**
+ * Upon receiving a query hit, this class initiate a thread that sends a file request to the target peer, and download
+ * the file if connection is successful
+ */
 public class FileReceiver extends Thread {
 
     private final String DIR = "./download/";
@@ -22,7 +26,7 @@ public class FileReceiver extends Thread {
     public void run() {
         try {
             String msg = new Query(QueryType.T, Collections.singletonList(filename)).toString();
-            System.out.println("Sending " + msg + " to " + socket.getRemoteSocketAddress().toString());
+            System.out.println("Requesting " + filename + " from " + socket.getRemoteSocketAddress().toString());
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             out.writeBytes(msg + "\n");
             byte[] bytes = socket.getInputStream().readAllBytes();

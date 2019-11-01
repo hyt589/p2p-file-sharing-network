@@ -8,6 +8,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * This class acts as a server for file requests.
+ */
 public class FileSender extends Thread {
     private ServerSocket serverSocket;
     private Config config = new Config();
@@ -25,9 +28,8 @@ public class FileSender extends Thread {
                 System.out.println("Incoming file request from " + client.getRemoteSocketAddress());
                 SenderThread thread = new SenderThread(client);
                 thread.start();
-                thread.join();
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

@@ -2,6 +2,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+/**
+ * A master thread of the main program
+ */
 public class Peer extends Thread {
 
     private PeerClient client;
@@ -30,6 +33,10 @@ public class Peer extends Thread {
         }
     }
 
+    /**
+     * This method reads commands from standard in and respond accordingly
+     * @throws IOException
+     */
     private void commandLineInterface() throws IOException {
         System.out.println("Command line interface is now available. Please type commands below.");
         while (true) {
@@ -57,6 +64,9 @@ public class Peer extends Thread {
         }
     }
 
+    /**
+     * Periodically perform heart beat check
+     */
     private class HeartBeat extends Thread {
         @Override
         public void run() {
