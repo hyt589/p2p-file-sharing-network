@@ -58,7 +58,7 @@ public class PeerClient {
             //TODO: start file receiver here
             if (Objects.nonNull(hit)) {
                 String ip = hit.msgList.get(0).split(";")[0];
-                int port = Integer.parseInt(hit.msgList.get(0).split(";")[1]);
+                int port = Integer.parseInt(hit.msgList.get(0).split(":")[1]);
                 Socket fileSocket = new Socket(ip, port);
                 FileReceiver fileReceiver = new FileReceiver(fileSocket, filename);
                 fileReceiver.start();
