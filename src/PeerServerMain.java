@@ -16,6 +16,8 @@ public class PeerServerMain extends Thread {
 
     private boolean keepListening = true;
 
+    private List<Socket> sockets = new ArrayList<>();
+
     @Override
     public void run() {
         System.out.println("Peer server is running.");
@@ -23,6 +25,7 @@ public class PeerServerMain extends Thread {
             serverSocket = new ServerSocket(Integer.parseInt(config.getPeerConfig().get(QUERY_PORT)));
             while (keepListening) {
                 Socket connection = serverSocket.accept();
+                sockets.add(connection);
                 System.out.println("Incoming connection from: " + connection.getRemoteSocketAddress().toString());
                 PeerServerChild child = new PeerServerChild(connection);
                 subThreads.add(child);
@@ -42,5 +45,20 @@ public class PeerServerMain extends Thread {
 
     public void stopListening() {
         keepListening = false;
+    }
+
+    public void closeConnections() {
+        sockets.forEach(socket -> {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        try {
+            serverSocket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

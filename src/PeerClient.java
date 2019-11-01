@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -11,7 +12,7 @@ public class PeerClient {
 
     private List<Socket> sockets;
 
-    private void connectToNeighbors() {
+    public void connectToNeighbors() {
         sockets = socketInfoList.stream().map(info -> {
             try {
                 System.out.println("Connecting to " + info.getIP());
@@ -23,7 +24,7 @@ public class PeerClient {
         }).filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private void closeConnections() {
+    public void closeConnections() {
         sockets.forEach(socket -> {
             try {
                 socket.close();
@@ -33,7 +34,7 @@ public class PeerClient {
         });
     }
 
-    private void getFile(String filename) {
+    public void getFile(String filename) {
         try {
             String query = new Query(QueryType.Q, Collections.singletonList(filename)).toString();
             List<PeerClientConnection> connectionThreads = sockets.stream().map(socket ->
@@ -55,12 +56,19 @@ public class PeerClient {
                 }
             }
             //TODO: start file receiver here
-        } catch (QueryFormatException e) {
+            if (Objects.nonNull(hit)) {
+                String ip = hit.msgList.get(0).split(";")[0];
+                int port = Integer.parseInt(hit.msgList.get(0).split(";")[1]);
+                Socket fileSocket = new Socket(ip, port);
+                FileReceiver fileReceiver = new FileReceiver(fileSocket, filename);
+                fileReceiver.start();
+            }
+        } catch (QueryFormatException | IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void checkConnectionStatus() {
+    public void checkConnectionStatus() {
         try {
             String query = new Query(QueryType.E, Collections.singletonList("Check connection")).toString();
             Map<Socket, PeerClientConnection> sockThreadMap = sockets.stream()

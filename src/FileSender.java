@@ -25,8 +25,9 @@ public class FileSender extends Thread {
                 System.out.println("Incoming file request from " + client.getRemoteSocketAddress());
                 SenderThread thread = new SenderThread(client);
                 thread.start();
+                thread.join();
             }
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -47,10 +48,8 @@ public class FileSender extends Thread {
                 String filename = query.msgList.get(0);
                 System.out.println(socket.getRemoteSocketAddress() + " requested " + filename);
                 Path path = Paths.get(FILE_PATH + filename);
-                String text = Files.readAllLines(path).stream().reduce((line1, line2) -> line1 + "\n" + line2).orElse("");
-                DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-                out.writeBytes(text);
-                out.close();
+                byte[] bytes = Files.readAllBytes(path);
+                socket.getOutputStream().write(bytes);
                 in.close();
                 socket.close();
             } catch (IOException | QueryFormatException e) {
