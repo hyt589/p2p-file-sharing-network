@@ -27,10 +27,11 @@ public class PeerServerChild extends Thread {
             while (true) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String msg = in.readLine();
+                Integer idBeforeQuery = Query.getCount().get();
                 Query query = new Query(msg);
                 System.out.println("Received: " + msg + " from " + client.getRemoteSocketAddress().toString());
                 if (query.type == QueryType.Q) {
-                    handleQ(query);
+                    handleQ(query, idBeforeQuery);
                 } else if (query.type == QueryType.E) {
                     handleE(query);
                 }
@@ -41,12 +42,13 @@ public class PeerServerChild extends Thread {
     }
 
     /**
-     * Handle the in coming Q query. Reply an R query to the sender if this is a hit; or forward to other peers otherwise
+     * Handle the in coming Q query. Reply an R query to the sender if this is a hit; or forward to other peers otherwise.
+     * Query id is checked before forwarding.
      * @param query - incoming query
      * @throws QueryFormatException
      * @throws IOException
      */
-    private void handleQ(Query query) throws QueryFormatException, IOException {
+    private void handleQ(Query query, Integer id) throws QueryFormatException, IOException {
         DataOutputStream out = new DataOutputStream(client.getOutputStream());
         String filename = query.msgList.get(0);
         String clientAddress = client.getRemoteSocketAddress().toString();
@@ -59,7 +61,11 @@ public class PeerServerChild extends Thread {
                     + config.getPeerConfig().get("file_sender_port"), filename));
             out.writeBytes(response.toString() + "\n");
         }else { //forward the query to other neighbors
-            System.out.println("No hit. Forwarding the query to neighbors");
+            if (query.id <= id) {
+                System.out.printf("Query id:%d is smaller than current query count %d%n", query.id, id);
+                System.out.println("Abort forwarding to avoid broadcast storm");
+                return;//do not forward if query id is smaller than Query.count
+            }
             Query hit = null;
             List<PeerClientThread> clients = neighbors.stream()
                     .map(info -> {
@@ -75,6 +81,7 @@ public class PeerServerChild extends Thread {
                     e.printStackTrace();
                 }
             });
+            System.out.println("No hit. Forwarding the query to neighbors");
             for (PeerClientThread client :
                     clients) {
                 if (!client.isTimedOut() && Objects.nonNull(client.getHit())) {

@@ -42,7 +42,7 @@ public class Query {
      * Construct a query object from a given query string
      *
      * @param queryString - a properly formatted query string
-     * @throws Exception when the query string is not properly formatted or the id
+     * @throws QueryFormatException when the query string is not properly formatted or the id
      *                   is already taken
      */
     public Query(String queryString) throws QueryFormatException {
@@ -61,4 +61,7 @@ public class Query {
         this.msgList = entryList.subList(1, entryList.size());
     }
 
+    public static AtomicInteger getCount() {
+        return count;
+    }
 }
