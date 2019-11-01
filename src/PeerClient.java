@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -16,7 +17,8 @@ public class PeerClient {
         sockets = socketInfoList.stream().map(info -> {
             try {
                 System.out.println("Connecting to " + info.getIP());
-                return new Socket(info.getIP(), info.getPORT());
+                int localPort = Integer.parseInt(config.getPeerConfig().get("file_port"));
+                return new Socket(info.getIP(), info.getPORT(), InetAddress.getByName(IPChecker.ip()),localPort);
             } catch (IOException e) {
                 e.printStackTrace();
                 return null;
@@ -59,7 +61,8 @@ public class PeerClient {
             if (Objects.nonNull(hit)) {
                 String ip = hit.msgList.get(0).split(":")[0];
                 int port = Integer.parseInt(hit.msgList.get(0).split(":")[1]);
-                Socket fileSocket = new Socket(ip, port);
+                int localPort = Integer.parseInt(config.getPeerConfig().get("file_port"));
+                Socket fileSocket = new Socket(ip, port, InetAddress.getByName(IPChecker.ip()), localPort);
                 FileReceiver fileReceiver = new FileReceiver(fileSocket, filename);
                 fileReceiver.start();
             }

@@ -1,4 +1,5 @@
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.Collections;
@@ -24,6 +25,7 @@ public class PeerServerChild extends Thread {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String msg = in.readLine();
                 Query query = new Query(msg);
+                System.out.println("Received: " + msg + " from " + client.getRemoteSocketAddress().toString());
                 if (query.type == QueryType.Q) {
                     handleQ(query);
                 } else if (query.type == QueryType.E) {
@@ -51,7 +53,8 @@ public class PeerServerChild extends Thread {
             List<PeerClientConnection> clients = neighbors.stream()
                     .map(info -> {
                         try {
-                            return new PeerClientConnection(new Socket(info.getIP(), info.getPORT()), query.toString());
+                            int localPort = Integer.parseInt(config.getPeerConfig().get("query_port"));
+                            return new PeerClientConnection(new Socket(info.getIP(), info.getPORT(), InetAddress.getByName(IPChecker.ip()), localPort), query.toString());
                         } catch (IOException e) {
                             e.printStackTrace();
                             return null;
