@@ -11,7 +11,7 @@ public class Peer extends Thread {
     private long heartBeatInterval = 10*1000;
 
     private final String CONNECT = "(?i)connect";
-    private final String GET = "((?i)get) +[\\w.]+";
+    private final String GET = "((?i)get) +[^ ]+";
     private final String LEAVE = "(?i)leave";
     private final String EXIT = "(?i)(exit|quit)";
 
