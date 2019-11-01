@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Query {
 
-    private final String QUERY_REGEX = "^[QTR]:\\(\\d+\\);\\([^)]+\\)(;\\([^)]+\\))*$";
+    private final String QUERY_REGEX = "^[QTRE]:\\(\\d+\\);\\([^)]+\\)(;\\([^)]+\\))*$";
     private static AtomicInteger count = new AtomicInteger(0); // this is for auto id
 
     public final QueryType type;
