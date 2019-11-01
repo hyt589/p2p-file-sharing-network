@@ -1,3 +1,6 @@
+/**
+ * This class contains the necessary ip address and port number to construct a socket
+ */
 public class SocketInfo {
 
     private final String IP;
