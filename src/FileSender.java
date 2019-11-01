@@ -12,7 +12,7 @@ public class FileSender extends Thread {
     private ServerSocket serverSocket;
     private Config config = new Config();
 
-    private final String FILE_PORT = "file_port";
+    private final String FILE_PORT = "file_sender_port";
     private final String FILE_PATH = "./project1-files/";
 
 

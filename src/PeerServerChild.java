@@ -52,7 +52,6 @@ public class PeerServerChild extends Thread {
             Query hit = null;
             List<PeerClientConnection> clients = neighbors.stream()
                     .map(info -> {
-                        int localPort = Integer.parseInt(config.getPeerConfig().get("query_port"));
                         return new PeerClientConnection(PeerClient.createClientSocket(info.getIP(), info.getPORT()), query.toString());
                     }).filter(Objects::nonNull)
                     .collect(Collectors.toList());
