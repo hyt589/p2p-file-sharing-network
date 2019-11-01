@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Query {
 
-    private final String QUERY_REGEX = "^[QTR]:\\(\\d+\\);\\([^)]+\\)(\\;\\([^)]+\\))*$";
+    private final String QUERY_REGEX = "^[QTR]:\\(\\d+\\);\\([^)]+\\)(;\\([^)]+\\))*$";
     private static AtomicInteger count = new AtomicInteger(0); // this is for auto id
 
     public final QueryType type;
@@ -17,7 +17,7 @@ public class Query {
      *
      * @param type    - type of this query
      * @param msgList - list of messages to send
-     * @throws Exception when there is no message
+     * @throws QueryFormatException when there is no message
      */
     public Query(QueryType type, List<String> msgList) throws QueryFormatException {
         this.type = type;
@@ -50,8 +50,8 @@ public class Query {
             throw new QueryFormatException();
         }
         this.type = QueryType.valueOf(queryString.substring(0, 1));
-        List<String> entryList = Arrays.asList(queryString.substring(2).split(";")).stream()
-                .map(msg -> msg.replaceAll("\\(|\\)", "")).collect(Collectors.toList());
+        List<String> entryList = Arrays.stream(queryString.substring(2).split(";"))
+                .map(msg -> msg.replaceAll("[()]", "")).collect(Collectors.toList());
         Integer potentialId = Integer.parseInt(entryList.get(0));
         if (potentialId < count.get()) {
             throw new NumberFormatException("Invalid id: " + potentialId + ", must be larger than: " + count.get());
