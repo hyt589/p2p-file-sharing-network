@@ -13,7 +13,7 @@ public class FileSender extends Thread {
     private Config config = new Config();
 
     private final String FILE_PORT = "file_port";
-    private final String FILE_PATH = "~/p2p/project1-files/";
+    private final String FILE_PATH = "./project1-files/";
 
 
     @Override
