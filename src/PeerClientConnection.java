@@ -6,11 +6,11 @@ public class PeerClientConnection extends Thread{
 
     private final int TIME_OUT = 30*1000;
 
-    private SocketInfo info;
     private Socket socket;
     private String msg;
     private boolean timedOut = false;
     private Query hit = null;
+    private Query echo = null;
 
     public PeerClientConnection(Socket socket, String msg) {
         this.socket = socket;
@@ -28,6 +28,8 @@ public class PeerClientConnection extends Thread{
             Query r = new Query(response);
             if (r.type == QueryType.R) {
                 hit = r;
+            }else if (r.type == QueryType.E) {
+
             }
         } catch (SocketTimeoutException sto) {
             System.err.println("Query timed out.");
@@ -44,6 +46,10 @@ public class PeerClientConnection extends Thread{
 
     public boolean isTimedOut() {
         return timedOut;
+    }
+
+    public Query getEcho() {
+        return echo;
     }
 
     public void closeSocket() throws IOException {

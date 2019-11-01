@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.Socket;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -24,6 +25,8 @@ public class PeerServerChild extends Thread {
             Query query = new Query(msg);
             if (query.type == QueryType.Q) {
                 handleQ(query);
+            } else if (query.type == QueryType.E) {
+                handleE(query);
             }
         } catch (IOException | QueryFormatException e) {
             e.printStackTrace();
@@ -71,5 +74,10 @@ public class PeerServerChild extends Thread {
                 }
             }
         }
+    }
+
+    private void handleE(Query query) throws IOException, QueryFormatException {
+        DataOutputStream out = new DataOutputStream(client.getOutputStream());
+        String response = new Query(QueryType.E, Collections.singletonList("Alive")).toString();
     }
 }

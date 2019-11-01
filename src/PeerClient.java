@@ -61,4 +61,22 @@ public class PeerClient {
         }
     }
 
+    private void checkConnectionStatus() {
+        try {
+            String query = new Query(QueryType.E, Collections.singletonList("Check connection")).toString();
+            List<PeerClientConnection> connectionThreads = sockets.stream().map(socket ->
+                    new PeerClientConnection(socket, query)).collect(Collectors.toList());
+            connectionThreads.forEach(PeerClientConnection::start);
+            connectionThreads.forEach(thread ->{
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (QueryFormatException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
