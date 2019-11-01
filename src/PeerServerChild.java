@@ -20,13 +20,15 @@ public class PeerServerChild extends Thread {
     public void run() {
         System.out.println(client.getRemoteSocketAddress().toString());
         try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            String msg = in.readLine();
-            Query query = new Query(msg);
-            if (query.type == QueryType.Q) {
-                handleQ(query);
-            } else if (query.type == QueryType.E) {
-                handleE(query);
+            while (true) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                String msg = in.readLine();
+                Query query = new Query(msg);
+                if (query.type == QueryType.Q) {
+                    handleQ(query);
+                } else if (query.type == QueryType.E) {
+                    handleE(query);
+                }
             }
         } catch (IOException | QueryFormatException e) {
             e.printStackTrace();
