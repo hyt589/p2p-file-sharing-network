@@ -11,7 +11,7 @@ public class IPChecker {
             String ip = in.readLine(); // you get the IP as a String
             return ip;
         } catch (Exception e) {
-            return "";
+            return "IP checking failed";
         }
     }
 }
