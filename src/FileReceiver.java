@@ -8,7 +8,7 @@ import java.util.Collections;
 
 public class FileReceiver extends Thread {
 
-    private final String DIR = "~/p2p/download/";
+    private final String DIR = "./download/";
 
     private Socket socket;
     private String filename;

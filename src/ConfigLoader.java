@@ -10,9 +10,9 @@ import java.util.stream.Collectors;
 
 public class ConfigLoader {
 
-    private static final String CONFIG_PEER = "~/p2p/config_peer.txt";
-    private static final String CONFIG_NEIGHBORS = "~/p2p/config_neighbors.txt";
-    private static final String CONFIG_SHARING = "~/p2p/config_sharing.txt";
+    private static final String CONFIG_PEER = "./config_peer.txt";
+    private static final String CONFIG_NEIGHBORS = "./config_neighbors.txt";
+    private static final String CONFIG_SHARING = "./config_sharing.txt";
 
     public static Map<String, String> loadPeerConfig() {
         try {
