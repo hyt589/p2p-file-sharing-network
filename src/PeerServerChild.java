@@ -87,8 +87,7 @@ public class PeerServerChild extends Thread {
             clients.forEach(clientThread -> {
                 try {
                     clientThread.join();
-                    clientThread.closeSocket();
-                } catch (InterruptedException | IOException e) {
+                } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             });
@@ -98,6 +97,13 @@ public class PeerServerChild extends Thread {
                     hit = clientThread.getHit();
                     System.out.println("Got a hit: " + hit.toString());
                     out.writeBytes(hit.toString()+ "\n"); //pass the query hit back to client
+                    clients.forEach(subThread -> {
+                        try {
+                            subThread.closeSocket();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
                     break;
                 }
             }
