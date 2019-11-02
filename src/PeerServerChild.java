@@ -31,7 +31,7 @@ public class PeerServerChild extends Thread {
                 if (msg.equals("Heart beat check")){
                     System.out.println("Heart beat check from " + client.getRemoteSocketAddress().toString());
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
-                    out.writeBytes("Alive");
+                    out.writeBytes("Alive\n");
                     continue;
                 }
                 Query query = new Query(msg);
