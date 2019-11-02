@@ -79,37 +79,33 @@ public class PeerClient {
      * Perform a heart beat check
      */
     public void checkConnectionStatus() {
-        try {
-            String query = new Query(QueryType.E, Collections.singletonList("Check connection")).toString();
-            Map<Socket, PeerClientThread> sockThreadMap = sockets.stream()
-                    .collect(Collectors.toMap(socket -> socket,
-                            socket -> new PeerClientThread((Socket) socket, query)));
-            sockThreadMap.values().forEach(PeerClientThread::start);
-            sockThreadMap.values().forEach(thread -> {
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            List<Socket> liveSockets = sockThreadMap.entrySet().stream()
-                    .filter(entry -> Objects.nonNull(entry.getValue().getEcho()))
-                    .map(Map.Entry::getKey).collect(Collectors.toList());
-            List<Socket> deadSockets = sockThreadMap.entrySet().stream()
-                    .filter(entry -> Objects.isNull(entry.getValue().getEcho()))
-                    .map(Map.Entry::getKey).collect(Collectors.toList());
-            liveSockets.forEach(socket -> System.out.println(socket.getRemoteSocketAddress().toString() + " is connected"));
-            deadSockets.forEach(socket -> {
-                System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check");
-                try {
-                    socket.close(); //close dead sockets
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (QueryFormatException e) {
-            e.printStackTrace();
-        }
+        String query = "Heart beat check";
+        Map<Socket, PeerClientThread> sockThreadMap = sockets.stream()
+                .collect(Collectors.toMap(socket -> socket,
+                        socket -> new PeerClientThread((Socket) socket, query)));
+        sockThreadMap.values().forEach(PeerClientThread::start);
+        sockThreadMap.values().forEach(thread -> {
+            try {
+                thread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        List<Socket> liveSockets = sockThreadMap.entrySet().stream()
+                .filter(entry -> Objects.nonNull(entry.getValue().getEcho()))
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+        List<Socket> deadSockets = sockThreadMap.entrySet().stream()
+                .filter(entry -> Objects.isNull(entry.getValue().getEcho()))
+                .map(Map.Entry::getKey).collect(Collectors.toList());
+        liveSockets.forEach(socket -> System.out.println(socket.getRemoteSocketAddress().toString() + " is connected"));
+        deadSockets.forEach(socket -> {
+            System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check");
+            try {
+                socket.close(); //close dead sockets
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**

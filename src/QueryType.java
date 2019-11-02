@@ -4,5 +4,5 @@
  * <p>E represents an echo query sent to check connection status</p>
  */
 public enum QueryType {
-    Q,R,T,E;
+    Q,R,T;
 }

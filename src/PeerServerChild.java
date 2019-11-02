@@ -28,12 +28,16 @@ public class PeerServerChild extends Thread {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String msg = in.readLine();
                 Integer idBeforeQuery = Query.getCount().get();
+                if (msg.equals("Heart beat check")){
+                    System.out.println("Heart beat check from " + client.getRemoteSocketAddress().toString());
+                    DataOutputStream out = new DataOutputStream(client.getOutputStream());
+                    out.writeBytes("Alive");
+                    return;
+                }
                 Query query = new Query(msg);
                 System.out.println("Received: " + msg + " from " + client.getRemoteSocketAddress().toString());
                 if (query.type == QueryType.Q) {
                     handleQ(query, idBeforeQuery);
-                } else if (query.type == QueryType.E) {
-                    handleE(query);
                 }
             }
         } catch (IOException | QueryFormatException e) {
@@ -93,16 +97,5 @@ public class PeerServerChild extends Thread {
         }
     }
 
-    /**
-     * Reply to a heart beat check
-     * @param query
-     * @throws IOException
-     * @throws QueryFormatException
-     */
-    private void handleE(Query query) throws IOException, QueryFormatException {
-        DataOutputStream out = new DataOutputStream(client.getOutputStream());
-        String response = new Query(QueryType.E, Collections.singletonList("Alive")).toString();
-        System.out.println("Replying to heart beat check: " + response);
-        out.writeBytes(response + "\n");
-    }
+
 }

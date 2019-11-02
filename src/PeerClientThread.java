@@ -14,7 +14,7 @@ public class PeerClientThread extends Thread{
     private String msg;
     private boolean timedOut = false;
     private Query hit = null;
-    private Query echo = null;
+    private String echo = null;
 
     public PeerClientThread(Socket socket, String msg) {
         this.socket = socket;
@@ -30,12 +30,13 @@ public class PeerClientThread extends Thread{
             out.writeBytes(msg + "\n");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String response = in.readLine();
+            if (response.equals("Alive")) {
+                echo = response;
+            }
             System.out.println(socket.getRemoteSocketAddress().toString() + " replied: " + response);
             Query r = new Query(response);
             if (r.type == QueryType.R) {
                 hit = r;
-            }else if (r.type == QueryType.E) {
-                echo = r;
             }
         } catch (SocketTimeoutException sto) {
             System.err.println("Query timed out.");
@@ -54,7 +55,7 @@ public class PeerClientThread extends Thread{
         return timedOut;
     }
 
-    public Query getEcho() {
+    public String getEcho() {
         return echo;
     }
 
