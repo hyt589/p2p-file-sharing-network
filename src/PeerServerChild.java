@@ -84,6 +84,7 @@ public class PeerServerChild extends Thread {
                     })
                     .collect(Collectors.toList());
             clients.forEach(PeerClientThread::start);
+            System.out.println("Threads started");
             clients.forEach(clientThread -> {
                 try {
                     clientThread.join();
