@@ -23,8 +23,9 @@ Downloaded files will be in the `~/p2p/download/` directory.
 
 ## Note on run.sh
 
-I included this shell script because I used the stream API from Java 8 in my program. I did a custom installation of jdk
-13 and this script is used to set JAVA_HOME and PATH so the program can run properly.
+I included this shell script because I used the stream API from Java 8 in my program quite extensively. I did a custom 
+installation of JDK 13 and this script is used to set the JAVA_HOME and PATH environment variables so the program can 
+run properly.
 
 ## Topology
 
