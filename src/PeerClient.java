@@ -57,7 +57,8 @@ public class PeerClient {
             connectionThreads.forEach(PeerClientThread::start);
             Query hit = null;
             int count = 0;
-            while (count < 3 && connectionThreads.stream().allMatch(o -> Objects.isNull(o.getHit()))) {
+            int countLimit = 5;
+            while (count < countLimit && connectionThreads.stream().allMatch(o -> Objects.isNull(o.getHit()))) {
                 Thread.sleep(sleepTime);
                 count++;
             }
@@ -76,7 +77,7 @@ public class PeerClient {
                 FileReceiver fileReceiver = new FileReceiver(fileSocket, filename);
                 fileReceiver.start();
             }else {
-                System.out.println("Could not find the file");
+                System.out.println("File search timed out");
             }
             connectionThreads.forEach(thread ->{
                 try {
