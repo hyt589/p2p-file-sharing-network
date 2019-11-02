@@ -46,13 +46,8 @@ public class PeerServerChild extends Thread {
             } catch (IOException | QueryFormatException e) {
                 e.printStackTrace();
             } catch (NullPointerException npe) {
-                break;
+                //do nothing
             }
-        }
-        try {
-            client.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
