@@ -65,7 +65,7 @@ public class PeerServerChild extends Thread {
                     + config.getPeerConfig().get("file_sender_port"), filename));
             out.writeBytes(response.toString() + "\n");
         }else { //forward the query to other neighbors
-            if (query.id < id) {
+            if (query.id == id) {
                 System.out.printf("Query id:%d is smaller than current query count %d%n", query.id, Query.getCount().get());
                 System.out.println("Abort forwarding to avoid broadcast storm");
                 return;//do not forward if query id is smaller than Query.count
