@@ -6,12 +6,17 @@ First change directory to ~/p2p:
 ```shell script
 cd ~/p2p
 ```  
-The run the following command to start the program:  
+The run the following script to start the program:  
 ```shell script
-java -cp classes p2p
+. run.sh
 ```
 
 All six peers needs to be started this way.
+
+## Note on run.sh
+
+I included this shell script because I used the stream API from Java 8 in my program. I did a custom installation of jdk
+13 and this script is used to set JAVA_HOME and PATH so the program can run properly.
 
 ## Topology
 
