@@ -34,6 +34,7 @@ public class PeerServerChild extends Thread {
                     out.writeBytes("Alive\n");
                     continue;
                 }
+                System.out.println(msg);
                 Query query = new Query(msg);
                 System.out.println("Received: " + msg + " from " + client.getRemoteSocketAddress().toString());
                 if (query.type == QueryType.Q) {
