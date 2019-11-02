@@ -93,7 +93,7 @@ public class PeerServerChild extends Thread {
             });
             for (PeerClientThread clientThread :
                     clients) {
-                System.out.println(clientThread.getHit());
+                System.out.println(clientThread.isTimedOut());
                 if (Objects.nonNull(clientThread.getHit())) {
                     hit = clientThread.getHit();
                     System.out.println("Got a hit: " + hit.toString());
