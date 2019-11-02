@@ -24,7 +24,7 @@ public class PeerClientThread extends Thread{
     @Override
     public void run() {
         try {
-//            socket.setSoTimeout(TIME_OUT);
+            socket.setSoTimeout(TIME_OUT);
             DataOutputStream out = new DataOutputStream(socket.getOutputStream());
             System.out.println("Sending \"" + msg + "\"to " + socket.getRemoteSocketAddress().toString());
             out.writeBytes(msg + "\n");

@@ -16,6 +16,8 @@ public class PeerServerChild extends Thread {
 
     private Config config = new Config();
 
+    private long sleepTime = 10*1000;
+
     public PeerServerChild(Socket client) {
         this.client = client;
     }
@@ -84,17 +86,18 @@ public class PeerServerChild extends Thread {
                     })
                     .collect(Collectors.toList());
             clients.forEach(PeerClientThread::start);
-            System.out.println("Threads started");
-            clients.forEach(clientThread -> {
-                try {
-                    System.out.println("waiting");
-                    clientThread.join();
-                    System.out.println(clientThread.isAlive());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            System.out.println("Threads finished");
+            try {
+                Thread.sleep(sleepTime);
+                clients.forEach(peerClientThread -> {
+                    try {
+                        peerClientThread.closeSocket();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             for (PeerClientThread clientThread :
                     clients) {
                 System.out.println(clientThread.isTimedOut());
