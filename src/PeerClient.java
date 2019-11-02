@@ -14,6 +14,8 @@ public class PeerClient {
 
     private List<Socket> sockets;
 
+    private long sleepTime = 2*1000;
+
     /**
      * Connect to all neighbors by creating sockets using the information in socket infos
      */
@@ -44,6 +46,10 @@ public class PeerClient {
      * @param filename
      */
     public void getFile(String filename) {
+        if (config.getSharing().contains(filename)) {
+            System.out.println("This peer already has this file");
+            return;
+        }
         try {
             String query = new Query(QueryType.Q, Collections.singletonList(filename)).toString();
             List<PeerClientThread> connectionThreads = sockets.stream().map(socket ->
@@ -57,6 +63,10 @@ public class PeerClient {
                 }
             });
             Query hit = null;
+            int count = 0;
+            while (count < 3 && connectionThreads.stream().allMatch(o -> Objects.isNull(o.getHit()))) {
+                Thread.sleep(sleepTime);
+            }
             for (PeerClientThread thread :
                     connectionThreads) {
                 if (!thread.isTimedOut() && Objects.nonNull(thread.getHit())) {
@@ -71,8 +81,10 @@ public class PeerClient {
                 Socket fileSocket = new Socket(ip, port, InetAddress.getByName(IPChecker.ip()), localPort);
                 FileReceiver fileReceiver = new FileReceiver(fileSocket, filename);
                 fileReceiver.start();
+            }else {
+                System.out.println("Could not find the file");
             }
-        } catch (QueryFormatException | IOException e) {
+        } catch (QueryFormatException | IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
