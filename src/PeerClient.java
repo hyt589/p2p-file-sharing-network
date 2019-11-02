@@ -1,6 +1,8 @@
 import java.io.IOException;
+import java.net.BindException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -122,6 +124,8 @@ public class PeerClient {
                 InetAddress localAddr = InetAddress.getByName(IPChecker.ip());
                 socket = new Socket(remoteIp, remotePort, localAddr, i);
                 break;
+            } catch (BindException e) {
+                System.err.println("Port "+ i + "already in use.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
