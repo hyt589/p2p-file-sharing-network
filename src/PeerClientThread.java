@@ -8,7 +8,7 @@ import java.net.SocketTimeoutException;
  */
 public class PeerClientThread extends Thread{
 
-    private final int TIME_OUT = 30*1000;
+    private final int TIME_OUT = 100*1000;
 
     private Socket socket;
     private String msg;
