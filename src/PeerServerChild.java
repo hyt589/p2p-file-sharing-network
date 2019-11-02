@@ -59,37 +59,43 @@ public class PeerServerChild extends Thread {
         List<SocketInfo> neighbors = config.getNeighbors().stream()
                 .filter(socketInfo -> !socketInfo.getIP().equals(clientAddress)) //filter out the sender
                 .collect(Collectors.toList());
+
         if (config.getSharing().contains(filename)) { //this peer has the file, return hit
+
             System.out.println("Query hit. This peer has the file: " + filename);
             Query response = new Query(QueryType.R, Arrays.asList(IPChecker.ip() + ":"
                     + config.getPeerConfig().get("file_sender_port"), filename));
             out.writeBytes(response.toString() + "\n");
+
         }else { //forward the query to other neighbors
             if (query.id.equals(id)) {
+
                 System.out.printf("Query id:%d is equal to current query count %d%n", query.id, Query.getCount().get());
                 System.out.println("Abort forwarding to avoid broadcast storm");
                 return;//do not forward if query id is smaller than Query.count
+
             }
             Query hit = null;
+            System.out.println("No hit. Forwarding the query to neighbors");
             List<PeerClientThread> clients = neighbors.stream()
                     .map(info -> {
                         return new PeerClientThread(PeerClient.createClientSocket(info.getIP(), info.getPORT()), query.toString());
                     })
                     .collect(Collectors.toList());
             clients.forEach(PeerClientThread::start);
-            clients.forEach(client -> {
+            clients.forEach(clientThread -> {
                 try {
-                    client.join();
-                    client.closeSocket();
+                    clientThread.join();
+                    clientThread.closeSocket();
                 } catch (InterruptedException | IOException e) {
                     e.printStackTrace();
                 }
             });
-            System.out.println("No hit. Forwarding the query to neighbors");
-            for (PeerClientThread client :
+            for (PeerClientThread clientThread :
                     clients) {
-                if (!client.isTimedOut() && Objects.nonNull(client.getHit())) {
-                    hit = client.getHit();
+                if (!clientThread.isTimedOut() && Objects.nonNull(clientThread.getHit())) {
+                    hit = clientThread.getHit();
+                    System.out.println("Got a hit: " + hit.toString());
                     out.writeBytes(hit.toString()+ "\n"); //pass the query hit back to client
                     break;
                 }
