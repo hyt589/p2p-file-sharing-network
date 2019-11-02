@@ -125,7 +125,7 @@ public class PeerClient {
                 socket = new Socket(remoteIp, remotePort, localAddr, i);
                 break;
             } catch (BindException e) {
-                System.err.println("Port "+ i + "already in use.");
+                System.err.println("Port "+ i + " already in use.");
             } catch (IOException e) {
                 e.printStackTrace();
             }
