@@ -21,6 +21,13 @@ get <filename>
 ```
 Downloaded files will be in the `~/p2p/download/` directory.
 
+Terminate the program with:
+```shell script
+leave
+exit
+```
+Or just press Ctrl + C. 
+
 ## Note on run.sh
 
 I included this shell script because I used the stream API from Java 8 in my program quite extensively. I did a custom 
@@ -35,3 +42,8 @@ between 12 and 13
 ## Multiple Query Hits Returned to Intermediate Peer
 
 This intermediate peer will only choose one query hit and pass it backward the query path to the original sender.
+
+## On Broadcastr Storm
+I used an incrementing `AtomicInteger` to track query ID. If an incoming query ID is less than or equal to `AtomicInteger` 
+of this peer, then it is an outdated query and will not be broadcast. If the incoming query has an ID that's greater than 
+`AtomicInteger`, then it is allowed to broadcast if needed.
