@@ -106,19 +106,33 @@ public class PeerServerChild extends Thread {
                     hit = clientThread.getHit();
                     System.out.println("Got a hit: " + hit.toString());
                     out.writeBytes(hit.toString()+ "\n"); //pass the query hit back to client
-                    clients.forEach(subThread -> {
-                        try {
-                            subThread.join();
-                            subThread.closeSocket();
-                        } catch (IOException | InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    });
                     break;
                 }
             }
+            new CloseSocketThread(clients).start();
         }
     }
 
+
+    private class CloseSocketThread extends Thread{
+
+        List<PeerClientThread> threads;
+
+        public CloseSocketThread(List<PeerClientThread> threads) {
+            this.threads = threads;
+        }
+
+        @Override
+        public void run() {
+            threads.forEach(thread ->{
+                try {
+                    thread.join();
+                    thread.closeSocket();
+                } catch (InterruptedException | IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+    }
 
 }
