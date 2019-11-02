@@ -57,7 +57,7 @@ public class PeerClient {
             connectionThreads.forEach(PeerClientThread::start);
             Query hit = null;
             int count = 0;
-            int countLimit = 5;
+            int countLimit = 15;
             while (count < countLimit && connectionThreads.stream().allMatch(o -> Objects.isNull(o.getHit()))) {
                 Thread.sleep(sleepTime);
                 count++;
