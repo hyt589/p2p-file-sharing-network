@@ -91,6 +91,7 @@ public class PeerServerChild extends Thread {
                     e.printStackTrace();
                 }
             });
+            System.out.println("Threads finished");
             for (PeerClientThread clientThread :
                     clients) {
                 System.out.println(clientThread.isTimedOut());
