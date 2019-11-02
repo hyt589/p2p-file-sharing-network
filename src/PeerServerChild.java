@@ -87,7 +87,9 @@ public class PeerServerChild extends Thread {
             System.out.println("Threads started");
             clients.forEach(clientThread -> {
                 try {
+                    System.out.println("waiting");
                     clientThread.join();
+                    System.out.println(clientThread.isAlive());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
