@@ -89,13 +89,6 @@ public class PeerServerChild extends Thread {
             clients.forEach(PeerClientThread::start);
             try {
                 Thread.sleep(sleepTime);
-                clients.forEach(peerClientThread -> {
-                    try {
-                        peerClientThread.closeSocket();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
