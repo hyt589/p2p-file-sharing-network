@@ -32,7 +32,7 @@ public class PeerServerChild extends Thread {
                     System.out.println("Heart beat check from " + client.getRemoteSocketAddress().toString());
                     DataOutputStream out = new DataOutputStream(client.getOutputStream());
                     out.writeBytes("Alive");
-                    return;
+                    continue;
                 }
                 Query query = new Query(msg);
                 System.out.println("Received: " + msg + " from " + client.getRemoteSocketAddress().toString());
