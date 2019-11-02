@@ -97,7 +97,6 @@ public class PeerServerChild extends Thread {
             }
             for (PeerClientThread clientThread :
                     clients) {
-                System.out.println("Hit: " + (Objects.nonNull(clientThread.getHit()) ? clientThread.getHit() : "null"));
                 if (Objects.nonNull(clientThread.getHit())) {
                     hit = clientThread.getHit();
                     System.out.println("Got a hit: " + hit.toString());

@@ -55,17 +55,11 @@ public class PeerClient {
             List<PeerClientThread> connectionThreads = sockets.stream().map(socket ->
                     new PeerClientThread(socket, query)).collect(Collectors.toList());
             connectionThreads.forEach(PeerClientThread::start);
-            connectionThreads.forEach(thread ->{
-                try {
-                    thread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
             Query hit = null;
             int count = 0;
             while (count < 3 && connectionThreads.stream().allMatch(o -> Objects.isNull(o.getHit()))) {
                 Thread.sleep(sleepTime);
+                count++;
             }
             for (PeerClientThread thread :
                     connectionThreads) {
@@ -84,6 +78,13 @@ public class PeerClient {
             }else {
                 System.out.println("Could not find the file");
             }
+            connectionThreads.forEach(thread ->{
+                try {
+                    thread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            });
         } catch (QueryFormatException | IOException | InterruptedException e) {
             e.printStackTrace();
         }

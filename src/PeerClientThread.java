@@ -38,7 +38,6 @@ public class PeerClientThread extends Thread{
             Query r = new Query(response);
             if (r.type == QueryType.R) {
                 hit = r;
-                System.out.println(r.toString());
             }
         } catch (SocketTimeoutException sto) {
             System.err.println("Query timed out.");
