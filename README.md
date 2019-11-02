@@ -13,6 +13,12 @@ The run the following script to start the program:
 
 All six peers needs to be started this way.
 
+To get a file from the network, connect to the network first. After starting all six peers, at any one peer, type the 
+following command:
+```shell script
+connect
+get <filename>
+```
 Downloaded files will be in the `~/p2p/download/` directory.
 
 ## Note on run.sh

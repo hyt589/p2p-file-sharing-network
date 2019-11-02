@@ -41,9 +41,7 @@ public class PeerServerChild extends Thread {
                 if (query.type == QueryType.Q) {
                     handleQ(query, idBeforeQuery);
                 }
-            } catch (IOException | QueryFormatException e) {
-                e.printStackTrace();
-            } catch (NullPointerException npe) {
+            } catch (IOException | QueryFormatException | NullPointerException e) {
                 //do nothing
             } catch (NumberFormatException nfe) {
                 System.out.println(nfe.getLocalizedMessage());
