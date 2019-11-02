@@ -1,1 +1,1 @@
-java -cp classes p2p -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:50420
+java -cp classes -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:50420 p2p
