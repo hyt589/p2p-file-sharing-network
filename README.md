@@ -13,6 +13,8 @@ The run the following script to start the program:
 
 All six peers needs to be started this way.
 
+Downloaded files will be in the `~/p2p/download/` directory.
+
 ## Note on run.sh
 
 I included this shell script because I used the stream API from Java 8 in my program. I did a custom installation of jdk

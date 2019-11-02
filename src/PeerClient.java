@@ -139,7 +139,7 @@ public class PeerClient {
                 socket = new Socket(remoteIp, remotePort, localAddr, i);
                 break;
             } catch (BindException e) {
-                System.err.println("Port "+ i + " already in use.");
+                //Port i is already in use. Try next port. Do nothing if this exception is raised
             } catch (IOException e) {
                 e.printStackTrace();
             }
