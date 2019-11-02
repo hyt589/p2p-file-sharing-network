@@ -90,7 +90,7 @@ public class PeerServerChild extends Thread {
                     clients) {
                 if (!client.isTimedOut() && Objects.nonNull(client.getHit())) {
                     hit = client.getHit();
-                    out.writeBytes(hit.toString()); //pass the query hit back to client
+                    out.writeBytes(hit.toString()+ "\n"); //pass the query hit back to client
                     break;
                 }
             }
