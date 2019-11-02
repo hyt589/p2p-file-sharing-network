@@ -88,10 +88,12 @@ public class PeerServerChild extends Thread {
                     })
                     .collect(Collectors.toList());
             clients.forEach(PeerClientThread::start);
-            try {
-                Thread.sleep(sleepTime);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (clients.stream().allMatch(o -> Objects.isNull(o.getHit()))) {
+                try {
+                    Thread.sleep(sleepTime);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             for (PeerClientThread clientThread :
                     clients) {
