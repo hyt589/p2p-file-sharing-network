@@ -32,6 +32,7 @@ public class PeerClientThread extends Thread{
             String response = in.readLine();
             if (response.equals("Alive")) {
                 echo = response;
+                return;
             }
             System.out.println(socket.getRemoteSocketAddress().toString() + " replied: " + response);
             Query r = new Query(response);
