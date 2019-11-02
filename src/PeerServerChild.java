@@ -16,7 +16,7 @@ public class PeerServerChild extends Thread {
 
     private Config config = new Config();
 
-    private long sleepTime = 10*1000;
+    private long sleepTime = 3*1000;
 
     public PeerServerChild(Socket client) {
         this.client = client;
