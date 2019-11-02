@@ -108,14 +108,16 @@ public class PeerClient {
             }
         });
         List<Socket> liveSockets = sockThreadMap.entrySet().stream()
+                .filter(entry -> !entry.getKey().isClosed())
                 .filter(entry -> Objects.nonNull(entry.getValue().getEcho()))
                 .map(Map.Entry::getKey).collect(Collectors.toList());
         List<Socket> deadSockets = sockThreadMap.entrySet().stream()
+                .filter(entry -> !entry.getKey().isClosed())
                 .filter(entry -> Objects.isNull(entry.getValue().getEcho()))
                 .map(Map.Entry::getKey).collect(Collectors.toList());
         liveSockets.forEach(socket -> System.out.println(socket.getRemoteSocketAddress().toString() + " is connected"));
         deadSockets.forEach(socket -> {
-            System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check");
+            System.out.println(socket.getRemoteSocketAddress().toString() + " did not reply to status check. Closing connection.");
             try {
                 socket.close(); //close dead sockets
             } catch (IOException e) {
