@@ -23,8 +23,8 @@ public class PeerServerChild extends Thread {
     @Override
     public void run() {
         System.out.println(client.getRemoteSocketAddress().toString());
-        try {
-            while (true) {
+        while (true) {
+            try {
                 BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 String msg = in.readLine();
                 Integer idBeforeQuery = Query.getCount().get();
@@ -39,9 +39,9 @@ public class PeerServerChild extends Thread {
                 if (query.type == QueryType.Q) {
                     handleQ(query, idBeforeQuery);
                 }
+            } catch (IOException | QueryFormatException e) {
+                e.printStackTrace();
             }
-        } catch (IOException | QueryFormatException e) {
-            e.printStackTrace();
         }
     }
 
